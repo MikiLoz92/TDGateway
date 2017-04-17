@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void getMessages() {
         if (device.isReady()) {
-            device.getMessagesHistory(10, null, new TdDevice.MessagesReceivedListener() {
+            //device.getDevices(null, null);
+            device.getLatestMessages(0, null, new TdDevice.MessagesReceivedListener() {
                 @Override
                 public void onMessagesReceived(List<IotMessage> messages) {
                     for (int i = 0; i < messages.size(); i++) {

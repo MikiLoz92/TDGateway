@@ -19,12 +19,19 @@ public class TdApiManager {
     static final String DEVICE_MESSAGES_HISTORY_ENDPOINT =
             "https://sensor.insgroup.fr/iot/devices/msgs/history.json";
 
+    static final String[] DEVICE_MESSAGES_HISTORY_LATEST_ENDPOINT_PARAMS = {"amount", "after"};
     static final String DEVICE_MESSAGES_HISTORY_LATEST_ENDPOINT =
-            "https://sensor.insgroup.fr/iot/devices/msgs/recents.json?amount=%1$s&after=%2$s";
+            "https://sensor.insgroup.fr/iot/devices/msgs/recents.json";
 
     static final String[] DEVICE_RAW_MESSAGES_HISTORY_ENDPOINT_PARAMS = {"limit", "before"};
     static final String DEVICE_RAW_MESSAGES_HISTORY_ENDPOINT =
             "https://sensor.insgroup.fr/iot/devices/msgs/sfx/history.json";
+
+    static final String DEVICE_CHILD_DEVICES_ENDPOINT =
+            "https://sensor.insgroup.fr/iot/devices/children.json";
+
+    static final String DEVICE_CLEAR_MESSAGES_ENDPOINT =
+            "https://sensor.insgroup.fr/iot/devices/clear.json";
 
     private Context context;
     private RequestQueue requestQueue;
