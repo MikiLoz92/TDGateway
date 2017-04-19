@@ -2,6 +2,8 @@ package com.mikiloz.tdgateway;
 
 import android.support.annotation.Nullable;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 
 
@@ -9,6 +11,7 @@ public class IotMessage {
 
     Date when, received;
     byte[] payload;
+    JSONObject jsonObject;
 
     public Date getReceptionDate() {
         return when;

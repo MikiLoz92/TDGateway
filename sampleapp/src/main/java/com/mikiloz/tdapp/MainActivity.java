@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mikiloz.tdgateway.IotDevice;
 import com.mikiloz.tdgateway.IotMessage;
-import com.mikiloz.tdgateway.TdApiManager;
-import com.mikiloz.tdgateway.TdDevice;
+import com.mikiloz.tdgateway.SensorApiManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,21 +16,42 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TdDevice device;
+    private IotDevice iotDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TdApiManager tdApiManager = new TdApiManager(this);
-        device = tdApiManager.newDevice("E4A3", "CFE3A995");
+        SensorApiManager sensorApiManager = new SensorApiManager(this);
+        /*device = sensorApiManager.newDevice("E4A3", "CFE3A995");
         device.initialize(new TdDevice.DeviceReadyListener() {
             @Override
             public void onDeviceReady() {
                 System.out.println("Device initialized");
             }
-        }, null);
+        }, null);*/
+
+        iotDevice = sensorApiManager.newIotDeviceForDeviceApi("E4A3", "CFE3A995",
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("");
+                    }
+                },
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Iot Information acquired");
+                    }
+                },
+                new SensorApiManager.SensorApiErrorListener() {
+                    @Override
+                    public void onError(String details) {
+                        System.out.println("Error");
+                    }
+                }
+        );
 
         Button retrieveMessagesButton = (Button) findViewById(R.id.retrieve_messages_button);
         retrieveMessagesButton.setOnClickListener(new View.OnClickListener() {
@@ -43,9 +64,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMessages() {
-        if (device.isReady()) {
-            //device.getDevices(null, null);
-            device.getLatestMessages(0, null, new TdDevice.MessagesReceivedListener() {
+
+        try {
+            iotDevice.
+            iotDevice.getMessagesHistory(1, null, new IotDevice.IotMessagesReceivedListener() {
                 @Override
                 public void onMessagesReceived(List<IotMessage> messages) {
                     for (int i = 0; i < messages.size(); i++) {
@@ -55,13 +77,15 @@ public class MainActivity extends AppCompatActivity {
                                 + "\".");
                     }
                 }
-            }, new TdDevice.ErrorListener() {
+            }, new SensorApiManager.SensorApiErrorListener() {
                 @Override
                 public void onError(String details) {
                     System.err.println("An error occurred: " + details);
                 }
             });
-        } else Toast.makeText(MainActivity.this, "Device is not ready yet.", Toast.LENGTH_SHORT).show();
+        } catch (SensorApiManager.CannotUseDeviceApiException e) {
+            Toast.makeText(MainActivity.this, "Device is not ready yet.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

@@ -14,13 +14,13 @@ import java.io.UnsupportedEncodingException;
 
 
 /**
- * A special {@link com.android.volley.Request} class for the Telecom Design API, because
+ * A special {@link com.android.volley.Request} class for the Telecom Design Sensor API, because
  * those fools can't decide whether returning JSON objects or arrays on an API call.
  */
-class TdJsonRequest extends JsonRequest<JSONArray> {
+class SensorJsonRequest extends JsonRequest<JSONArray> {
 
-    public TdJsonRequest(int method, String url, Response.Listener<JSONArray> listener,
-                         Response.ErrorListener errorListener) {
+    public SensorJsonRequest(int method, String url, Response.Listener<JSONArray> listener,
+                             Response.ErrorListener errorListener) {
         super(method, url, null, listener, errorListener);
     }
 
