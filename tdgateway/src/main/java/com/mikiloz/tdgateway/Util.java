@@ -2,6 +2,8 @@ package com.mikiloz.tdgateway;
 
 import android.support.annotation.NonNull;
 
+import java.util.Locale;
+
 
 class Util {
 
@@ -17,6 +19,12 @@ class Util {
                 sb.append(firstParameter ? "?" : "&").append(params[i]).append("=").append(values[i]);
         } return sb.toString();
 
+    }
+
+    static String gmtNumberToString(int gmt) {
+        String str = "GMT" + (gmt >= 0 ? "+" : "-") + String.format(Locale.US, "%02d", Math.abs(gmt))
+                + ":00";
+        return str;
     }
 
     static class InvalidParamsAndValuesLengthException extends Exception {}

@@ -13,9 +13,11 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -64,6 +66,9 @@ public class SensorApiManager {
     static final String DEVELOPER_GET_DEVICE_INFORMATION_ENDPOINT =
             "https://sensor.insgroup.fr/iot/developers/device.json";
 
+    static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy KK:mm:ss aa z", Locale.US);
+    static final int GMT_TIMEZONE = 1;
+
 
 
     private Context context;
@@ -86,20 +91,18 @@ public class SensorApiManager {
 
     public IotDevice newIotDeviceForDeviceApi(String sn, String key,
                                               @Nullable Runnable onDeviceApiAuthenticated,
-                                              @Nullable Runnable onDeviceInformationAcquired,
                                               @Nullable SensorApiManager.SensorApiErrorListener errorListener) {
         final IotDevice device = new IotDevice(null, sn, key, this,
-                onDeviceApiAuthenticated, onDeviceInformationAcquired, errorListener);
+                onDeviceApiAuthenticated, null, errorListener);
         iotDevices.add(device);
         return device;
     }
 
     public IotDevice newIotDeviceForDeveloperApi(String id, String sn,
-                                                 @Nullable Runnable onDeviceApiAuthenticated,
                                                  @Nullable Runnable onDeviceInformationAcquired,
                                                  @Nullable SensorApiManager.SensorApiErrorListener errorListener) {
         final IotDevice device = new IotDevice(id, sn, null, this,
-                onDeviceApiAuthenticated, onDeviceInformationAcquired, errorListener);
+                null, onDeviceInformationAcquired, errorListener);
         iotDevices.add(device);
         return device;
     }
@@ -131,11 +134,21 @@ public class SensorApiManager {
 
         if (developerAuthToken == null) throw new CannotUseDeveloperApiException();
 
+        String[] params = {id, sn};
+        String endpoint;
+        try {
+            endpoint = Util.populateUrlWithParams(DEVELOPER_GET_DEVICE_INFORMATION_ENDPOINT,
+                    DEVELOPER_GET_DEVICE_INFORMATION_ENDPOINT_PARAMS, params);
+        } catch (Util.InvalidParamsAndValuesLengthException e) {
+            return;
+        }
+
         SensorApiManager.AuthenticatedDeveloperJsonObjectRequest request =
                 new AuthenticatedDeveloperJsonObjectRequest(Request.Method.GET,
-                        SensorApiManager.DEVELOPER_GET_DEVICE_INFORMATION_ENDPOINT, new Response.Listener<JSONObject>() {
+                        endpoint, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        System.out.println(response.toString());
                         informationReceived.onIotInformationResponseReceived(response);
                     }
                 }, new Response.ErrorListener() {

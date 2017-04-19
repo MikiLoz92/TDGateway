@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SensorApiManager sensorApiManager = new SensorApiManager(this);
+        SensorApiManager sensorApiManager = new SensorApiManager(this, "bWFudWVsLm1vcmVuby5lZ3VpbGF6QHVwYy5lZHU6U2N1dHVtMjAxNiE=");
         /*device = sensorApiManager.newDevice("E4A3", "CFE3A995");
         device.initialize(new TdDevice.DeviceReadyListener() {
             @Override
@@ -32,17 +32,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }, null);*/
 
-        iotDevice = sensorApiManager.newIotDeviceForDeviceApi("E4A3", "CFE3A995",
+        iotDevice = sensorApiManager.newIotDevice("154062487", "E4A3", "CFE3A995",
                 new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("");
+                        System.out.println("Device API authenticated");
                     }
                 },
                 new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("Iot Information acquired");
+                        System.out.println("IoT information received");
                     }
                 },
                 new SensorApiManager.SensorApiErrorListener() {
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     private void getMessages() {
 
         try {
-            iotDevice.
             iotDevice.getMessagesHistory(1, null, new IotDevice.IotMessagesReceivedListener() {
                 @Override
                 public void onMessagesReceived(List<IotMessage> messages) {

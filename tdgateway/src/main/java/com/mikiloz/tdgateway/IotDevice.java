@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,9 @@ import static com.mikiloz.tdgateway.SensorApiManager.DEVICE_SET_BIDIR_VALUE_ENDP
 import static com.mikiloz.tdgateway.SensorApiManager.DEVICE_SET_BIDIR_VALUE_ENDPOINT_PARAMS;
 import static com.mikiloz.tdgateway.SensorApiManager.DEVICE_SET_MONITORING_FLAG_ENDPOINT;
 import static com.mikiloz.tdgateway.SensorApiManager.DEVICE_SET_MONITORING_FLAG_ENDPOINT_PARAMS;
+import static com.mikiloz.tdgateway.SensorApiManager.GMT_TIMEZONE;
+import static com.mikiloz.tdgateway.SensorApiManager.dateFormat;
+import static com.mikiloz.tdgateway.Util.gmtNumberToString;
 
 /**
  * This class represents a Telecom Design Sensor API IoT device.
@@ -41,7 +45,7 @@ import static com.mikiloz.tdgateway.SensorApiManager.DEVICE_SET_MONITORING_FLAG_
 public class IotDevice {
 
     public enum PowerStatus { ON, OFF, UNKNOWN }
-    public enum TemperatureStatus { LOW, OK, HIGH }
+    public enum TemperatureStatus { LOW, OK, HIGH, UNKNOWN }
 
     private String id, uid, sn, key, gateway;
     private String category;
@@ -137,28 +141,32 @@ public class IotDevice {
         try { device.gateway = jsonObject.getString("gateway"); } catch (JSONException ignored) {}
         try { device.category = jsonObject.getString("category"); } catch (JSONException ignored) {}
         try { device.index = jsonObject.getInt("index"); } catch (JSONException ignored) {}
-        try { device.firstSeen = new Date(jsonObject.getLong("firstseen")); } catch (JSONException ignored) {}
-        try { device.lastSeen = new Date(jsonObject.getLong("lastseen")); } catch (JSONException ignored) {}
+        try { device.firstSeen = dateFormat.parse(jsonObject.getString("firstseen")
+                + " " + Util.gmtNumberToString(GMT_TIMEZONE)); }
+        catch (JSONException | ParseException ignored) {}
+        try { device.lastSeen = dateFormat.parse(jsonObject.getString("lastseen")
+                + " " + Util.gmtNumberToString(GMT_TIMEZONE)); }
+        catch (JSONException | ParseException ignored) {}
         try { device.active = jsonObject.getBoolean("active"); } catch (JSONException ignored) {}
         try { device.status = jsonObject.getString("status"); } catch (JSONException ignored) {}
         try { device.messageCount = jsonObject.getInt("msgs"); } catch (JSONException ignored) {}
         try { device.lostCount = jsonObject.getInt("losts"); } catch (JSONException ignored) {}
         try {
             String value = jsonObject.getString("network");
-            device.networkStatus = value.equals("ON") ? PowerStatus.ON : (value.equals("OFF") ? PowerStatus.OFF : PowerStatus.UNKNOWN);
-        } catch (JSONException ignored) {}
+            device.networkStatus = PowerStatus.valueOf(value);
+        } catch (JSONException | IllegalArgumentException ignored) {}
         try {
             String value = jsonObject.getString("battery");
-            device.batteryStatus = value.equals("ON") ? PowerStatus.ON : (value.equals("OFF") ? PowerStatus.OFF : PowerStatus.UNKNOWN);
-        } catch (JSONException ignored) {}
+            device.batteryStatus = PowerStatus.valueOf(value);
+        } catch (JSONException | IllegalArgumentException ignored) {}
         try {
             String value = jsonObject.getString("tamper");
-            device.tamperStatus = value.equals("ON") ? PowerStatus.ON : (value.equals("OFF") ? PowerStatus.OFF : PowerStatus.UNKNOWN);
-        } catch (JSONException ignored) {}
+            device.tamperStatus = PowerStatus.valueOf(value);
+        } catch (JSONException | IllegalArgumentException ignored) {}
         try {
             String value = jsonObject.getString("temp");
-            device.temperatureStatus = value.equals("LOW") ? TemperatureStatus.LOW : (value.equals("OK") ? TemperatureStatus.OK : TemperatureStatus.HIGH);
-        } catch (JSONException ignored) {}
+            device.temperatureStatus = TemperatureStatus.valueOf(value);
+        } catch (JSONException | IllegalArgumentException ignored) {}
 
         device.lastInformationRetrievalDate = new Date();
     }
@@ -666,8 +674,8 @@ public class IotDevice {
 
     private IotMessage parseIotMessage(JSONObject object) throws JSONException {
         IotMessage message = new IotMessage();
-        message.received = new Date(object.getLong("received"));
-        message.when = new Date(object.getLong("when"));
+        message.received = new Date(object.getLong("received") /*- GMT_TIMEZONE*3600*/);
+        message.when = new Date(object.getLong("when") /*- GMT_TIMEZONE*3600*/);
         message.payload = object.has("payload") ? object.getString("payload").getBytes() : null;
         message.jsonObject = object;
         return message;
