@@ -44,7 +44,7 @@ IotDevice device1 = apiManager.newIotDeviceForDeveloperApi("124953171", "0123", 
 IotDevice device2 = apiManager.newIotDevice("124953171", "0123", "89ABCDEF", ...);
 ```
 As you can see, there are three different constructors:
-* The first one is used when you want to create a device for use with the *Device API* (this will allow you to check its messages but you won't be able to retrieve information from the device itself). You need the serial number and the key of the device.
+* The first one is used when you want to create a device for use with the *Device API* (this will allow you to check its messages but you won't be able to retrieve information from the device itself). You need the serial number and the key of the device. If you supplied a valid developer authentication token to the api manager, it will query the *Developer API* for this device ID and you'll be able to perform **device operations** with this device.
 * The second one is for when you want to create a device for use with the *Developer API* (you'll be able to check the information from the device itself, but won't be able to check its messages). You need the ID and the serial number of the device.
 * The last one provides both device information **and** message checking. You have to pass to the constructor the ID, the serial number and the key of the device.
 
