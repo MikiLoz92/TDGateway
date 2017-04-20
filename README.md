@@ -50,3 +50,5 @@ As you can see, there are three different constructors:
 
 Also, on all constructors you have to supply a pair of `Runnable`s, that will be called whenever the API manager has obtained an authentication token from the *Device API*, and when the API manager has obtained the information of this device, respectively. Also, a `SensorApiErrorListener` has to be supplied too, for error checking, as it it consists of an asynchronous operation. For more info you can check that on the javadocs.
 
+#### Performing queries
+You can query message data using the device instance. For this, the `IotDevice` class provides wrappers for every API call, as seen [here](https://developers.insgroup.fr/iot/device.html#msgs_history). Of course, to perform device operations, you need to supply a developer authentication token to the api manager, or set the device's ID on its constructor, if you already know it.
