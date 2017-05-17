@@ -673,12 +673,31 @@ public class IotDevice {
     //region Helpers
 
     private IotMessage parseIotMessage(JSONObject object) throws JSONException {
-        IotMessage message = new IotMessage();
-        message.received = new Date(object.getLong("received") /*- GMT_TIMEZONE*3600*/);
-        message.when = new Date(object.getLong("when") /*- GMT_TIMEZONE*3600*/);
-        message.payload = object.has("payload") ? object.getString("payload").getBytes() : null;
-        message.jsonObject = object;
-        return message;
+
+        IotMessage iotMessage = new IotMessage();
+        iotMessage.received = new Date(object.getLong("received") /*- GMT_TIMEZONE*3600*/);
+        iotMessage.when = new Date(object.getLong("when") /*- GMT_TIMEZONE*3600*/);
+        //message.payload = object.has("payload") ? object.getString("payload").getBytes() : null;
+        iotMessage.payload = null;
+        if (object.has("extra")) {
+            JSONObject extra = object.getJSONObject("extra");
+            String message = extra.has("message") ? extra.getString("message") : null;
+            if (message != null && message.length() != 0 && message.length() % 2 == 0) {
+                iotMessage.payload = hexStringToByteArray(message);
+            }
+        }
+        iotMessage.jsonObject = object;
+        return iotMessage;
+    }
+
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 
     private RawMessage parseRawMessage(JSONObject object) throws JSONException {

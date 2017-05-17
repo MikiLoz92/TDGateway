@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SensorApiManager sensorApiManager = new SensorApiManager(this, "bWFudWVsLm1vcmVuby5lZ3VpbGF6QHVwYy5lZHU6U2N1dHVtMjAxNiE=");
+        SensorApiManager sensorApiManager = new SensorApiManager(this, getString(R.string.developer_token));
         /*device = sensorApiManager.newDevice("E4A3", "CFE3A995");
         device.initialize(new TdDevice.DeviceReadyListener() {
             @Override
@@ -32,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, null);*/
 
-        iotDevice = sensorApiManager.newIotDevice("154062487", "E4A3", "CFE3A995",
+        iotDevice = sensorApiManager.newIotDevice(getString(R.string.device_id),
+                getString(R.string.device_sn),getString(R.string.device_key),
                 new Runnable() {
                     @Override
                     public void run() {
@@ -85,6 +86,18 @@ public class MainActivity extends AppCompatActivity {
         } catch (SensorApiManager.CannotUseDeviceApiException e) {
             Toast.makeText(MainActivity.this, "Device is not ready yet.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * This method reads the developer and device credentials from a local file called
+     * "credentials.gradle" and located in the sampleapp module directory. Put your credentials and
+     * rename the "credentials.gradle.example" file to "credentials.gradle".
+     * @return
+     */
+    private String[] loadProperties() {
+
+        return null;
+
     }
 
 }
