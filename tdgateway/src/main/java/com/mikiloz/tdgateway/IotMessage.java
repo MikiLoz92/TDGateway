@@ -28,4 +28,8 @@ public class IotMessage {
         return payload;
     }
 
+    public @Nullable JSONObject getJsonInformation() {
+        return jsonObject;
+    }
+
 }
